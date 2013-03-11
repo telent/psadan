@@ -1,34 +1,15 @@
 (ns psadan.core
-  (:require [psadan.protocol :as proto]
-            [psadan.buffer :as buf]))
+  (:require
+   [psadan.connection :as conn]
+   [psadan.protocol :as proto]
+   [psadan.buffer :as buf]))
 
-(def global-object
-  {:interface (proto/find-interface-by-name :wl_display)
-   :id 1})
-
-(defn open-connection [name]
-  (let [s (cx.ath.matthew.unix.UnixSocket. name)
-        in (. s getInputStream)
-        out (. s getOutputStream)
-        ]
-    {:socket s
-     :input in
-     :output out
-     :objects (atom (assoc {} 1 global-object))
-     }))
-
-(defn remember-object [socket id object]
-  (swap! (:objects socket) assoc id object))
-
-(defn get-object [socket id]
-  (let [o (get @(:objects socket) id)]
-    o))
 
 ;;; here endeth the code that will one day be library code.  Below here
 ;;; it's all client code and/or mucking around
 
 
-(def connection (open-connection "/home/dan/private/wayland-0"))
+(def connection (conn/open-connection "/home/dan/private/wayland-0"))
 
 (defn foo []
   (. (:output connection)
@@ -45,11 +26,8 @@
 
 
 (defn test-pack-message []
-  (let [callback (remember-object
-                  socket 2
+  (let [callback (conn/remember-object
+                  connection 2
                   {:interface (proto/find-interface-by-name :wl_callback)})
         ]
-    (pack-message socket global-object :get_registry callback)))
-
-
-
+    (buf/pack-message connection (:display connection) :get_registry callback)))

@@ -1,4 +1,5 @@
-(ns psadan.buffer)
+(ns psadan.buffer
+  (:require [psadan.connection :as conn]))
 
 (defn word-at [buf offset]
   (bit-or (nth buf (+ 0 offset))
@@ -19,12 +20,15 @@
     :string (let [l (word-at buffer offset)] ;this probably doesn't work yet
               (subvec buffer (+ 4 offset) (+ 4 l offset)))))
 
+;;; XXX parse-message gets an object id.  It needs to ask the
+;;; connection for an object so that it knows what interface to look
+;;; the opcode up in, and hence how to do arg parsing
 
-(defn parse-message [buf socket message-type]
+(defn parse-message [buf connection message-type]
   (let [object-id (word-at buf 0)
         bytes (halfword-at buf 6)
         opcode (halfword-at buf 4)
-        object (find-object socket object-id)
+        object (conn/get-object connection object-id)
         interface-def (:interface object) 
         message-def (nth (get interface-def message-type) opcode)
         args (buffer-get-arguments buf 8 (map :type (:args message-def)))]
@@ -47,3 +51,6 @@
                message)))))
 
 
+
+(defn pack-message [connection object request-or-event & args]
+  nil)
