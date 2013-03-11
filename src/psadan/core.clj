@@ -1,4 +1,5 @@
 (ns psadan.core
+  (:refer-clojure)                      ;apparently this is not the default?!
   (:require
    [psadan.connection :as conn]
    [psadan.protocol :as proto]
