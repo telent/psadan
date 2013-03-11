@@ -1,5 +1,6 @@
 (ns psadan.core
-  (:require [psadan.protocol :as proto]))
+  (:require [psadan.protocol :as proto]
+            [psadan.buffer :as buf]))
 
 (def global-object
   {:interface (proto/find-interface-by-name :wl_display)
@@ -22,60 +23,9 @@
 (defn get-object [socket id]
   (let [o (get @(:objects socket) id)]
     o))
-    
 
-(defn word-at [buf offset]
-  (bit-or (nth buf (+ 0 offset))
-          (bit-shift-left (nth buf (+ 1 offset)) 8) 
-          (bit-shift-left (nth buf (+ 2 offset)) 16)
-          (bit-shift-left  (nth buf (+ 3 offset)) 24)))
-
-(defn halfword-at [buf offset]
-  (bit-or (nth buf (+ 0 offset))
-          (bit-shift-left (nth buf (+ 1 offset)) 8) ))
-
-(defn buffer-get-arguments [buffer offset types]
-  (case (first types)
-    (nil) ()
-    (:int :uint :object :new_id)
-    (conj (buffer-get-arguments buffer (+ 4 offset) (rest types))
-          (word-at buffer offset))
-    :string (let [l (word-at buffer offset)] ;this probably doesn't work yet
-              (subvec buffer (+ 4 offset) (+ 4 l offset)))))
-
-
-(defn parse-message-from-buf [buf socket message-type]
-  (let [object-id (word-at buf 0)
-        bytes (halfword-at buf 6)
-        opcode (halfword-at buf 4)
-        object (find-object socket object-id)
-        interface-def (:interface object) 
-        message-def (nth (get interface-def message-type) opcode)
-        args (buffer-get-arguments buf 8 (map :type (:args message-def)))]
-    {:object-id object-id :bytes bytes
-     :interface interface-def
-     :message (:name message-def)
-     :args args}))
-    
-(defn parse-messages-from-buf 
-  ([buf socket message-type]
-     (parse-messages-from-buf buf socket message-type 0))
-  ([buf socket message-type start]
-     (let [length-bytes (halfword-at buf (+ 6 start))
-           end (+ length-bytes start)
-           message (parse-message-from-buf (subvec buf start end)
-                                           socket message-type)]
-       (if (>= end (count buf))
-         (conj '() message)
-         (conj (parse-messages-from-buf buf socket message-type end)
-               message)))))
-
-
-;;; Code that will one day be library code lives above this line
-
-;;;;                 -------------------------------------
-
-;;; Client code that is really just me screwing around lives below that line
+;;; here endeth the code that will one day be library code.  Below here
+;;; it's all client code and/or mucking around
 
 
 (def connection (open-connection "/home/dan/private/wayland-0"))
