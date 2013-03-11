@@ -5,11 +5,11 @@
   (bit-or (nth buf (+ 0 offset))
           (bit-shift-left (nth buf (+ 1 offset)) 8) 
           (bit-shift-left (nth buf (+ 2 offset)) 16)
-          (bit-shift-left  (nth buf (+ 3 offset)) 24)))
+          (bit-shift-left (nth buf (+ 3 offset)) 24)))
 
 (defn halfword-at [buf offset]
   (bit-or (nth buf (+ 0 offset))
-          (bit-shift-left (nth buf (+ 1 offset)) 8) ))
+          (bit-shift-left (nth buf (+ 1 offset)) 8)))
 
 (defn buffer-get-arguments [buffer offset types]
   (case (first types)
