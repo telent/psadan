@@ -24,18 +24,6 @@
     o))
     
 
-(def socket (open-socket "/home/dan/private/wayland-0"))
-
-
-(defn foo []
-  (. (:output socket) (write (.getBytes "\1\0\0\0\1\0\f\0\2\0\0\0\1\0\0\0\0\0\f\0\3\0\0\0"))))
-
-(defn rd []
-  (let [buf (byte-array 580)] 
-    (. (:input socket) (read buf))
-    buf))
-
-
 (defn word-at [buf offset]
   (bit-or (nth buf (+ 0 offset))
           (bit-shift-left (nth buf (+ 1 offset)) 8) 
@@ -69,15 +57,6 @@
      :message (:name message-def)
      :args args}))
     
-
-(let [callback (remember-object
-                socket 2
-                {:interface (find-interface-by-name :wl_callback)})
-      ]
-  (pack-message socket 
-  callback)
-
-
 (defn parse-messages-from-buf 
   ([buf socket message-type]
      (parse-messages-from-buf buf socket message-type 0))
