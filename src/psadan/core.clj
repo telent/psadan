@@ -25,6 +25,10 @@
     (. (:input connection) (read buf))
     buf))
 
+(defn test-parse-messages []
+  (let [m (buf/parse-messages (vec (.getBytes "\1\0\0\0\1\0\f\0\2\0\0\0\1\0\0\0\0\0\f\0\3\0\0\0")) connection :requests)]
+    (assert (= (map :message m) '(:get_registry :sync)))
+    (map :message m)))
 
 (defn test-pack-message []
   (let [callback (conn/remember-object
