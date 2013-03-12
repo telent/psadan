@@ -33,6 +33,10 @@
 (defn test-pack-message []
   (let [callback (conn/remember-object
                   connection 2
-                  {:interface (proto/find-interface-by-name :wl_callback)})
+                  {:id 2
+                   :interface (proto/find-interface-by-name :wl_callback)})
         ]
-    (buf/pack-message connection (:display connection) :get_registry callback)))
+    (assert (=
+             (buf/pack-message connection (:display connection)
+                               :requests :get_registry [callback])
+             [1 0 0 0 1 0 12 0 2 0 0 0]))))

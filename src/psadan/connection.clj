@@ -21,7 +21,8 @@
      }))
 
 (defn remember-object [conn id object]
-  (swap! (:objects conn) assoc id object))
+  (swap! (:objects conn) assoc id object)
+  object)
 
 (defn get-object [conn id]
   (let [o (get @(:objects conn) id)]
