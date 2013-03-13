@@ -52,3 +52,9 @@
              [1 0 0 0 0 0 12 0 3 0 0 0]))))
 
 
+(defn test-send-message []
+  (let [callback (conn/remember-object connection
+                                       {:id 2 :interface (proto/find-interface-by-name :wl_callback)})  ]
+    (write-buffer connection
+                  (buf/pack-message connection (:display connection)
+                                    :requests :get_registry [callback]))))
