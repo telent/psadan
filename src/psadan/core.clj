@@ -37,8 +37,18 @@
                   connection
                   {:id 2
                    :interface (proto/find-interface-by-name :wl_callback)})
+        callback1 (conn/remember-object
+                   connection
+                   {:id 3
+                    :interface (proto/find-interface-by-name :wl_callback)})
         ]
     (assert (=
              (buf/pack-message connection (:display connection)
                                :requests :get_registry [callback])
-             [1 0 0 0 1 0 12 0 2 0 0 0]))))
+             [1 0 0 0 1 0 12 0 2 0 0 0]))
+    (assert (=
+             (buf/pack-message connection (:display connection)
+                               :requests :sync [callback1])
+             [1 0 0 0 0 0 12 0 3 0 0 0]))))
+
+
