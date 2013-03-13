@@ -17,9 +17,12 @@
     (:int :uint :object :new_id)
     (conj (buffer-get-arguments buffer (+ 4 offset) (rest types))
           (word-at buffer offset))
-    :string (let [l (word-at buffer offset)] ;this probably doesn't work yet
-              (subvec buffer (+ 4 offset) (+ 4 l offset)))))
-
+    :string (let [l (word-at buffer offset)
+                  round (fn [x] (+ (bit-and x 0xfffffffc) 4))
+                  end (+ 4 (round l) offset)]
+              (conj (buffer-get-arguments buffer end (rest types))
+                    (subvec buffer (+ 4 offset) (+ 4 l offset))))))
+              
 (defn pack-arg [type value]
   (case type
     :new_id
