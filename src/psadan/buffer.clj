@@ -23,7 +23,7 @@
 (defn pack-arg [type value]
   (case type
     :new_id
-    (pack-argument :uint (:id value))
+    (pack-arg :uint (:id value))
     (:int :uint :object)
     [(bit-shift-right (bit-and value 0x000000ff) 0)
      (bit-shift-right (bit-and value 0x0000ff00) 8)
@@ -31,7 +31,7 @@
      (bit-shift-right (bit-and value 0xff000000) 24)]
     :string
     (let [bytes (.getBytes value)]
-      (vec (concat (pack-argument :int (count bytes))
+      (vec (concat (pack-arg :int (count bytes))
                    (vec bytes)
                    (subvec [0 0 0 0] (mod (count bytes) 4)))))))
 
