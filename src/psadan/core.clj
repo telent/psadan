@@ -32,7 +32,7 @@
 
 (defn test-pack-message []
   (let [callback (conn/remember-object
-                  connection 2
+                  connection
                   {:id 2
                    :interface (proto/find-interface-by-name :wl_callback)})
         ]

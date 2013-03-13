@@ -20,8 +20,8 @@
      :objects (atom (assoc {} 1 wl-display))
      }))
 
-(defn remember-object [conn id object]
-  (swap! (:objects conn) assoc id object)
+(defn remember-object [conn object]
+  (swap! (:objects conn) assoc (:id object) object)
   object)
 
 (defn get-object [conn id]
