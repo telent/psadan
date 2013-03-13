@@ -3,7 +3,7 @@
 
 (defn word-at [buf offset]
   (bit-or (nth buf (+ 0 offset))
-          (bit-shift-left (nth buf (+ 1 offset)) 8) 
+          (bit-shift-left (nth buf (+ 1 offset)) 8)
           (bit-shift-left (nth buf (+ 2 offset)) 16)
           (bit-shift-left (nth buf (+ 3 offset)) 24)))
 
