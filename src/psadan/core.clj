@@ -44,8 +44,19 @@
 
 
 (defn test-send-message []
-  (let [callback (conn/remember-object connection
-                                       {:id 2 :interface (proto/find-interface-by-name :wl_callback)})  ]
+  (let [registry
+        (conn/remember-object
+         connection
+         {:id 2 :interface (proto/find-interface-by-name :wl_registry)})
+        done-cb
+        (conn/remember-object
+         connection
+         {:id 3 :interface (proto/find-interface-by-name :wl_callback)})
+        ]
     (write-buffer connection
                   (buf/pack-message connection (:display connection)
-                                    :requests :get_registry [callback]))))
+                                    :requests :get_registry [registry]))
+    (write-buffer connection
+                  (buf/pack-message connection (:display connection)
+                                    :requests :sync [done-cb]))
+    registry))
