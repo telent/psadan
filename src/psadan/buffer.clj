@@ -17,12 +17,23 @@
     (:int :uint :object :new_id)
     (conj (buffer-get-arguments buffer (+ 4 offset) (rest types))
           (word-at buffer offset))
-    :string (let [l (word-at buffer offset)
-                  round (fn [x] (+ (bit-and x 0xfffffffc) 4))
-                  end (+ 4 (round l) offset)]
-              (conj (buffer-get-arguments buffer end (rest types))
-                    (subvec buffer (+ 4 offset) (+ 4 l offset))))))
-              
+    :string
+    (let [start (+ offset 4)
+          len (word-at buffer offset)
+          ;; The string length includes a terminating nul byte.  If the
+          ;; length is a multiple of 4, there is no following padding
+          pad (case (bit-and len 0x3)
+                0 0
+                1 3
+                2 2
+                3 1)
+          end (+ start len pad)]
+      (conj (buffer-get-arguments buffer end (rest types))
+            (apply str
+                   (map char
+                        ;; lose leading length word, trailing \0
+                        (subvec buffer start (+ start -1 len))))))))
+
 (defn pack-arg [type value]
   (case type
     :new_id
