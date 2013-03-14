@@ -5,7 +5,6 @@
    [psadan.protocol :as proto]
    [psadan.buffer :as buf]))
 
-
 ;;; here endeth the code that will one day be library code.  Below here
 ;;; it's all client code and/or mucking around
 
