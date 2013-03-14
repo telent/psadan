@@ -27,3 +27,13 @@
 (defn get-object [conn id]
   (let [o (get @(:objects conn) id)]
     o))
+
+(defn write-buffer [connection buf]
+  (. (:output connection)
+     (write (into-array Byte/TYPE buf))))
+      
+(defn read-buffer [connection]
+  (let [buf (byte-array 1024)
+        len (. (:input connection) (read buf))]
+    (subvec (vec buf) 0 len)))
+

@@ -18,14 +18,6 @@
      ;; weston-info, as made visible by strace
      (write (.getBytes "\1\0\0\0\1\0\f\0\2\0\0\0\1\0\0\0\0\0\f\0\3\0\0\0"))))
 
-(defn write-buffer [connection buf]
-  (. (:output connection)
-     (write (into-array Byte/TYPE buf))))
-      
-(defn read-buffer [connection]
-  (let [buf (byte-array 1024)
-        len (. (:input connection) (read buf))]
-    (subvec (vec buf) 0 len)))
 
 (defn test-parse-messages []
   (let [m (buf/parse-messages (vec (.getBytes "\1\0\0\0\1\0\f\0\2\0\0\0\1\0\0\0\0\0\f\0\3\0\0\0")) connection :requests)]
