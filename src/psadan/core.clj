@@ -11,7 +11,7 @@
 
 (def connection (conn/open-connection "/home/dan/private/wayland-0"))
 
-(defn foo []
+(defn fake-weston-info-client-send []
   (. (:output connection)
      ;; this byte string is the initial client greeting performed by
      ;; weston-info, as made visible by strace
@@ -53,10 +53,10 @@
          connection
          {:id 3 :interface (proto/find-interface-by-name :wl_callback)})
         ]
-    (write-buffer connection
-                  (buf/pack-message connection (:display connection)
-                                    :requests :get_registry [registry]))
-    (write-buffer connection
-                  (buf/pack-message connection (:display connection)
-                                    :requests :sync [done-cb]))
+    (conn/write-buffer connection
+                       (buf/pack-message connection (:display connection)
+                                         :requests :get_registry [registry]))
+    (conn/write-buffer connection
+                       (buf/pack-message connection (:display connection)
+                                         :requests :sync [done-cb]))
     registry))
