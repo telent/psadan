@@ -1,6 +1,7 @@
 (ns psadan.core
   (:refer-clojure)                      ;apparently this is not the default?!
   (:require
+   [psadan.pack :as pack]
    [psadan.connection :as conn]
    [psadan.protocol :as proto]
    [psadan.buffer :as buf]))
@@ -34,12 +35,12 @@
                     :interface (proto/find-interface-by-name :wl_callback)})
         ]
     (assert (=
-             (buf/pack-message connection (:display connection)
-                               :requests :get_registry [callback])
+             (pack/pack-message (:display @connection)
+                                :requests :get_registry [callback])
              [1 0 0 0 1 0 12 0 2 0 0 0]))
     (assert (=
-             (buf/pack-message connection (:display connection)
-                               :requests :sync [callback1])
+             (pack/pack-message (:display @connection)
+                                :requests :sync [callback1])
              [1 0 0 0 0 0 12 0 3 0 0 0]))))
 
 
@@ -54,9 +55,9 @@
          {:id 3 :interface (proto/find-interface-by-name :wl_callback)})
         ]
     (conn/write-buffer connection
-                       (buf/pack-message connection (:display connection)
-                                         :requests :get_registry [registry]))
+                       (pack/pack-message (:display @connection)
+                                          :requests :get_registry [registry]))
     (conn/write-buffer connection
-                       (buf/pack-message connection (:display connection)
-                                         :requests :sync [done-cb]))
+                       (pack/pack-message (:display @connection)
+                                          :requests :sync [done-cb]))
     registry))
