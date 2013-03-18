@@ -48,14 +48,14 @@
      :args args}))
     
 (defn parse-messages 
-  ([buf connection message-type]
-     (parse-messages buf connection message-type 0))
-  ([buf connection message-type start]
+  ([buf socket message-type]
+     (parse-messages buf socket message-type 0))
+  ([buf socket message-type start]
      (let [length-bytes (halfword-at buf (+ 6 start))
            end (+ length-bytes start)
            message (parse-message (subvec buf start end)
-                                  connection message-type)]
+                                  socket message-type)]
        (if (>= end (count buf))
          (conj '() message)
-         (conj (parse-messages buf connection message-type end)
+         (conj (parse-messages buf socket message-type end)
                message)))))

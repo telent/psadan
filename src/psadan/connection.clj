@@ -13,28 +13,27 @@
         out (. s getOutputStream)
         wl-display (global-object-factory)
         ]
-    (agent
-     {:socket s
-      :input in
-      :output out
-      :display wl-display
-      :objects (atom (assoc {} 1 wl-display))
-      })))
+    {:socket s
+     :input in
+     :output out
+     :display wl-display
+     :objects (atom (assoc {} 1 wl-display))
+     }))
 
 (defn remember-object [conn object]
-  (swap! (:objects @conn) assoc (:id object) object)
+  (swap! (:objects conn) assoc (:id object) object)
   object)
 
 (defn get-object [conn id]
-  (let [o (get @(:objects @conn) id)]
+  (let [o (get @(:objects conn) id)]
     o))
 
 (defn write-buffer [connection buf]
-  (. (:output @connection)
+  (. (:output connection)
      (write (into-array Byte/TYPE buf))))
       
 (defn read-buffer [connection]
   (let [buf (byte-array 1024)
-        len (. (:input @connection) (read buf))]
+        len (. (:input connection) (read buf))]
     (subvec (vec buf) 0 len)))
 
