@@ -34,6 +34,9 @@
                         ;; lose leading length word, trailing \0
                         (subvec buffer start (+ start -1 len))))))))
 
+
+
+
 (defn parse-message [buf connection message-type]
   (let [object-id (word-at buf 0)
         bytes (halfword-at buf 6)
@@ -59,3 +62,4 @@
          (conj '() message)
          (conj (parse-messages buf socket message-type end)
                message)))))
+
