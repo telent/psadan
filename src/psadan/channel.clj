@@ -3,6 +3,7 @@
   (:require
    [psadan.connection :as conn]
    [psadan.protocol :as proto]
+   [psadan.pack :as pack]
    [psadan.buffer :as buf]))
 
 (defmulti handle-message 
@@ -10,7 +11,11 @@
     [(:name (:interface m)) (:message m)]))
 
 (defmethod handle-message [:wl_registry :global] [conn m]
-  (println ["fake register global" (:args m)]))
+  ;; according to the protocol, 'name' is a uint.  Confusing, 
+  ;; but we stick with that nomenclature for consistency
+  (let [[name interface version] (:args m)]
+    (println ["global " name interface version])
+    (conn/register-global conn name interface version)))
 
 (defmethod handle-message [:wl_callback :done] [conn m]
   (let [object (conn/get-object  conn (:object-id m))
