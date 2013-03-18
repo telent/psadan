@@ -33,3 +33,26 @@
   (let [agent (agent (conn/open-connection name))]
     (send-off agent listen)
     agent))
+
+
+(defn get-registry [channel]
+  (let [connection @channel
+        registry
+        (conn/remember-object
+         connection
+         {:id 2 :interface (proto/find-interface-by-name :wl_registry)})
+        promise (promise)
+        done-cb
+        (conn/remember-object
+         connection
+         {:id 3 
+          :promise promise
+          :interface (proto/find-interface-by-name :wl_callback)})
+        ]
+    (conn/write-buffer connection
+                       (pack/pack-message (:display connection)
+                                         :requests :get_registry [registry]))
+    (conn/write-buffer connection
+                       (pack/pack-message (:display connection)
+                                         :requests :sync [done-cb]))
+    @promise))

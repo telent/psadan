@@ -46,24 +46,4 @@
              [1 0 0 0 0 0 12 0 3 0 0 0]))))
 
 
-(defn test-send-message [channel]
-  (let [connection @channel
-        registry
-        (conn/remember-object
-         connection
-         {:id 2 :interface (proto/find-interface-by-name :wl_registry)})
-        promise (promise)
-        done-cb
-        (conn/remember-object
-         connection
-         {:id 3 
-          :promise promise
-          :interface (proto/find-interface-by-name :wl_callback)})
-        ]
-    (conn/write-buffer connection
-                       (pack/pack-message (:display connection)
-                                         :requests :get_registry [registry]))
-    (conn/write-buffer connection
-                       (pack/pack-message (:display connection)
-                                         :requests :sync [done-cb]))
-    promise))
+
