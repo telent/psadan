@@ -42,22 +42,22 @@
 
 (defn get-registry [channel]
   (let [connection @channel
-        registry
-        (conn/remember-object
-         connection
-         {:id 2 :interface (proto/find-interface-by-name :wl_registry)})
+        registry (conn/remember-object
+                  connection
+                  {:id 2
+                   :interface (proto/find-interface-by-name :wl_registry)})
         promise (promise)
-        done-cb
-        (conn/remember-object
-         connection
-         {:id 3 
-          :promise promise
-          :interface (proto/find-interface-by-name :wl_callback)})
+        done-cb (conn/remember-object
+                 connection
+                 {:id 3
+                  :promise promise
+                  :interface (proto/find-interface-by-name :wl_callback)})
+        display (:display connection)
         ]
-    (conn/write-buffer connection
-                       (pack/pack-message (:display connection)
-                                         :requests :get_registry [registry]))
-    (conn/write-buffer connection
-                       (pack/pack-message (:display connection)
-                                         :requests :sync [done-cb]))
+    (conn/write-buffer
+     connection
+     (mapcat (fn [[object mtype message args]]
+               (pack/pack-message object mtype message args))
+             [[display :requests :get_registry [registry]]
+              [display :requests :sync [done-cb]]]))
     @promise))
