@@ -1,3 +1,5 @@
+;;;; parse the wayland wire protocol from wayland.xml
+
 (ns psadan.protocol
   (:require [clojure.xml]
             [clojure.data.zip :as dz]
@@ -5,7 +7,21 @@
             [clojure.walk]
             [clojure.zip :as z]))
 
-;;; parse the wayland wire protocol from wayland.xml
+(defn extra-args-for-new-ids [[arg & args]]
+  ;; if any arg is declared in the XML as having a new_id arg with null 
+  ;; interface, that *actually* means it takes three args, those being
+  ;; string interface_name, uint version, and the new_id itself
+  (when arg
+    (if (and (= (:type arg) :new_id)
+             (nil? (:interface arg)))
+      (let [version {:name (str (:name arg) "/version") :type :uint}
+            name {:name (str (:name arg) "/interface") :type :string}]
+        (conj
+         (conj (conj (extra-args-for-new-ids args)
+                     arg)
+               version)
+         name))
+      (conj (extra-args-for-new-ids args) arg))))
 
 (defn parse-message [i m]
   (let [el (z/node m)
@@ -20,7 +36,7 @@
     {:index i
      :name (keyword (:name (:attrs el)))
      :summary (and descr (:summary (:attrs (z/node descr))))
-     :args args
+     :args (extra-args-for-new-ids args)
      }))
 
 (defn parse-enum [e]
