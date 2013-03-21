@@ -24,7 +24,7 @@
       (deliver promise m))))
 
 (defmethod handle-message :default [conn m]
-  (println ["unknown message" (:name (:interface m)) (:message m)]))
+  (println ["unhandled message" (:name (:interface m)) (:message m) (:args m)]))
 
 (defn listen [conn]
   (let [buf (conn/read-buffer conn)
