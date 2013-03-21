@@ -35,6 +35,10 @@
   (let [o (get @(:objects conn) id)]
     o))
 
+(defn get-global [conn interface]
+  (first (filter #(= (:interface (second %)) interface) 
+                 @(:globals conn))))
+
 (defn write-buffer [connection buf]
   (. (:output connection)
      (write (into-array Byte/TYPE buf))))
