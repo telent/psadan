@@ -3,7 +3,9 @@
 (defn pack-arg [type value]
   (case type
     :new_id
-    (pack-arg :uint (:id value))
+    (do
+      (assert (:id value))
+      (pack-arg :uint (:id value)))
     (:int :uint :object)
     [(bit-shift-right (bit-and value 0x000000ff) 0)
      (bit-shift-right (bit-and value 0x0000ff00) 8)
