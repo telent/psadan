@@ -22,8 +22,10 @@
      }))
 
 (defn remember-object [conn object]
-  (swap! (:objects conn) assoc (:id object) object)
-  object)
+  (let [id (or (:id object) (+ 1 (apply max (keys @(:objects conn)))))
+        o (assoc object :id id)]
+    (swap! (:objects conn) assoc id o)
+    o))
 
 (defn register-global [conn name interface version]
   (swap! (:globals conn) assoc name {:interface (keyword interface)
