@@ -13,7 +13,7 @@
      (bit-shift-right (bit-and value 0xff000000) 24)]
     :string
     (let [bytes (.getBytes value)]
-      (vec (concat (pack-arg :int (count bytes))
+      (vec (concat (pack-arg :int (+ 1 (count bytes)))
                    (vec bytes)
                    (subvec [0 0 0 0] (mod (count bytes) 4)))))))
 
@@ -21,7 +21,7 @@
   (assert (= (map #(format "%x" %) (pack-arg :int 0x12345678))
              '("78" "56" "34" "12")))
   (assert (= (pack-arg :string "hello")
-             [5 0 0 0 104 101 108 108 111 0 0 0]))
+             [6 0 0 0 104 101 108 108 111 0 0 0]))
   (assert (= (pack-arg :new_id {:id 1234}) [210 4 0 0]))
   (assert (= (count (pack-arg :string "hello ")) 12))
   (assert (= (count (pack-arg :string "hello 1")) 12))
