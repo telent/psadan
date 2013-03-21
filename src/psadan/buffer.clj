@@ -34,9 +34,6 @@
                         ;; lose leading length word, trailing \0
                         (subvec buffer start (+ start -1 len))))))))
 
-
-
-
 (defn parse-message [buf connection message-type]
   (let [object-id (word-at buf 0)
         bytes (halfword-at buf 6)
@@ -45,10 +42,12 @@
         interface-def (:interface object) 
         message-def (nth (get interface-def message-type) opcode)
         args (buffer-get-arguments buf 8 (map :type (:args message-def)))]
-    {:object-id object-id :bytes bytes
-     :interface interface-def
-     :message (:name message-def)
-     :args args}))
+    (if message-def
+      {:object-id object-id :bytes bytes
+       :interface interface-def
+       :message (:name message-def)
+       :args args}
+      (println ["no protocol for" object buf]))))
     
 (defn parse-messages 
   ([buf socket message-type]
