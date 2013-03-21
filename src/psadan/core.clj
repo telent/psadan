@@ -61,5 +61,6 @@
              [[registry :requests :bind [intfname
                                          (name (:interface interface))
                                          (:version interface)
-                                         bound]]]))))
+                                         bound]]]))
+    bound))
 
