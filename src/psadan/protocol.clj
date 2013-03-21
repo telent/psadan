@@ -64,19 +64,18 @@
   (map-indexed parse-interface (x/xml-> protocol :interface)))
 
 (def the-protocol
-  (let [wayland
-        (->
-         "/home/dan/wayland/source/wayland/protocol/wayland.xml"
-         clojure.xml/parse
-         z/xml-zip
-         parse-protocol)
-        drm
-        (->
-         "/home/dan/wayland/source/mesa/src/egl/wayland/wayland-drm/wayland-drm.xml"
-         clojure.xml/parse
-         z/xml-zip
-         parse-protocol)]
-    (concat core drm)))
+  (let [parse (fn [file]
+                (->
+                 file
+                 clojure.xml/parse
+                 z/xml-zip
+                 parse-protocol))
+        wayland (parse 
+                 "/home/dan/wayland/source/wayland/protocol/wayland.xml")
+        drm (parse 
+             "/home/dan/wayland/source/mesa/src/egl/wayland/wayland-drm/wayland-drm.xml")
+        ]
+    (concat wayland drm)))
 
 (defn find-interface-by-name [name]
   (first (filter #(= (:name %) name) the-protocol)))
