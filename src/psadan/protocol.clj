@@ -43,7 +43,8 @@
   (let [name (keyword (:name (:attrs (z/node e))))
         entries (map z/node (x/xml-> e :entry))]
     {:name name
-     :summary (:summary (:attrs (z/node (x/xml1-> e :description))))
+     :summary (let [d (x/xml1-> e :description)]
+                (and d (:summary (:attrs (z/node d)))))
      :entries (map :attrs entries)
      }))
 
