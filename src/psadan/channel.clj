@@ -38,26 +38,29 @@
   (let [agent (agent (conn/open-connection name))]
     (send-off agent listen)
     agent))
+ 
+(defmacro with-sync [[channel] & body]
+  (let [promis (gensym "promise") done (gensym "done")]
+    `(do
+       ~@body
+       (let [~promis (promise)
+             ~done (conn/remember-object
+                    @~channel
+                    {:promise ~promis
+                     :interface (proto/find-interface-by-name :wl_callback)})]
+         (conn/write-buffer
+          @~channel
+          (pack/pack-message (:display @~channel) :requests :sync [~done]))
+         @~promis))))
 
 
 (defn get-registry [channel]
-  (let [connection @channel
-        registry (conn/remember-object
-                  connection
-                  {:id 2
-                   :interface (proto/find-interface-by-name :wl_registry)})
-        promise (promise)
-        done-cb (conn/remember-object
-                 connection
-                 {:id 3
-                  :promise promise
-                  :interface (proto/find-interface-by-name :wl_callback)})
-        display (:display connection)
-        ]
-    (conn/write-buffer
-     connection
-     (mapcat (fn [[object mtype message args]]
-               (pack/pack-message object mtype message args))
-             [[display :requests :get_registry [registry]]
-              [display :requests :sync [done-cb]]]))
-    @promise))
+  (with-sync [channel]
+    (let [connection @channel
+          registry (conn/remember-object
+                    connection
+                    {:interface (proto/find-interface-by-name :wl_registry)})
+          display (:display connection)]
+      (conn/write-buffer
+       connection
+       (pack/pack-message display :requests :get_registry [registry])))))
