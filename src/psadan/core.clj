@@ -56,7 +56,6 @@
     (conn/write-buffer
      @channel
      (mapcat (fn [params]
-               (pprint params)
                (apply pack/pack-message params))
              [[registry :requests :bind [intfname
                                          (name (:interface interface))

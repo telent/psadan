@@ -18,7 +18,7 @@
      :output out
      :display wl-display
      :objects (atom (assoc {} 1 wl-display))
-     :globals (atom {})
+     :globals {}
      }))
 
 (defn remember-object [conn object]
@@ -27,17 +27,13 @@
     (swap! (:objects conn) assoc id o)
     o))
 
-(defn register-global [conn name interface version]
-  (swap! (:globals conn) assoc name {:interface (keyword interface)
-                                     :version version}))
-
 (defn get-object [conn id]
   (let [o (get @(:objects conn) id)]
     o))
 
 (defn get-global [conn interface]
   (first (filter #(= (:interface (second %)) interface) 
-                 @(:globals conn))))
+                 (:globals conn))))
 
 (defn write-buffer [connection buf]
   (. (:output connection)
