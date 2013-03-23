@@ -55,11 +55,10 @@
                {:interface (proto/find-interface-by-name interface-name)})]
     (conn/write-buffer
      @channel
-     (mapcat (fn [params]
-               (apply pack/pack-message params))
-             [[registry :requests :bind [intfname
-                                         (name (:interface interface))
-                                         (:version interface)
-                                         bound]]]))
+     (pack/pack-message registry :requests :bind
+                        [intfname
+                         (name (:interface interface))
+                         (:version interface)
+                         bound]))
     bound))
 
