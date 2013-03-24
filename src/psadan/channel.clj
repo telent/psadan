@@ -27,6 +27,21 @@
       (deliver promise m))
     conn))
 
+(defmethod handle-message [:wl_drm :device] [conn m]
+  (let [oid (:object-id m)
+        object (conn/get-object conn oid)
+        [device] (:args m)]
+    (conn/remember-object conn (assoc object :device device))
+    conn))
+
+(defmethod handle-message [:wl_drm :format] [conn m]
+  (let [oid (:object-id m)
+        object (conn/get-object conn oid)
+        [format] (:args m)
+        formats (conj (get object :formats []) format)]
+    (conn/remember-object conn (assoc object :formats formats))
+    conn))
+
 (defmethod handle-message :default [conn m]
   (println ["unhandled message" (:name (:interface m)) (:message m) (:args m)])
   conn)
